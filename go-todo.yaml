@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-todo-deployment
+  labels:
+    app: go-todo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-todo
+  template:
+    metadata:
+      labels:
+        app: go-todo
+    spec:
+      containers:
+      - name: go-todo
+        image: monu1/go-todo:v2
+        ports:
+        - containerPort: 4040
+        env:
+        - name: DB_USER
+          value: root
+        - name: DB_PASS
+          value: my-secret-pw
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: gotodo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-todo-service
+spec:
+  type: NodePort
+  selector:
+    app: go-todo
+  ports:
+    - protocol: TCP
+      port: 4040
+      targetPort: 4040
+      nodePort: 30100
